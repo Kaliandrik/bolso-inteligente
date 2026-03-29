@@ -4,7 +4,8 @@ import {
   signOut,
   updateProfile,
   setPersistence,
-  browserLocalPersistence
+  browserLocalPersistence,
+  sendPasswordResetEmail // Adicionado para recuperação de senha
 } from 'firebase/auth';
 import { auth, db } from './firebase';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
@@ -18,8 +19,8 @@ setPersistence(auth, browserLocalPersistence).catch((error) => {
 export const authService = {
   async register(email: string, password: string, name: string): Promise<User> {
     try {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    const firebaseUser = userCredential.user;
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const firebaseUser = userCredential.user;
       
       await updateProfile(firebaseUser, { displayName: name });
       
@@ -66,6 +67,16 @@ export const authService = {
       await signOut(auth);
     } catch (error) {
       console.error('Error logging out:', error);
+      throw error;
+    }
+  },
+
+  // NOVA FUNÇÃO: Recuperação de senha
+  async resetPassword(email: string): Promise<void> {
+    try {
+      await sendPasswordResetEmail(auth, email);
+    } catch (error) {
+      console.error('Error sending password reset email:', error);
       throw error;
     }
   },
