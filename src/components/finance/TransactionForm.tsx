@@ -9,6 +9,7 @@ import { useFinance } from '../../hooks/useFinance';
 interface TransactionFormProps {
   onClose: () => void;
   editingTransaction?: Transaction | null;
+  selectedDate: Date; 
 }
 
 const categoryOptions: { value: TransactionCategory; label: string }[] = [
@@ -38,29 +39,42 @@ interface FormData {
   date: string;
 }
 
-export const TransactionForm: React.FC<TransactionFormProps> = ({ onClose, editingTransaction }) => {
+export const TransactionForm: React.FC<TransactionFormProps> = ({ onClose, editingTransaction, selectedDate }) => {
   const { addTransaction, updateTransaction } = useFinance();
   const [showSuccess, setShowSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null); // Estado para o erro na tela
+  const [error, setError] = useState<string | null>(null);
+
+  const getInitialDate = () => {
+    if (editingTransaction?.date) {
+      return new Date(editingTransaction.date).toISOString().split('T')[0];
+    }
+    const hoje = new Date();
+    const isMesAtual = 
+      selectedDate.getMonth() === hoje.getMonth() && 
+      selectedDate.getFullYear() === hoje.getFullYear();
+
+    if (isMesAtual) {
+      return hoje.toISOString().split('T')[0];
+    } else {
+      return new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1).toISOString().split('T')[0];
+    }
+  };
   
   const [formData, setFormData] = useState<FormData>({
     description: editingTransaction?.description || '',
     amount: editingTransaction?.amount?.toString() || '',
     type: editingTransaction?.type || 'expense',
     category: editingTransaction?.category || 'Outros',
-    date: editingTransaction?.date 
-      ? new Date(editingTransaction.date).toISOString().split('T')[0] 
-      : new Date().toISOString().split('T')[0],
+    date: getInitialDate(),
   });
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError(null); // Limpa erros anteriores ao tentar enviar
+    setError(null);
 
     if (isLoading || showSuccess) return;
 
-    // Converte e valida o valor
     const rawAmount = formData.amount.replace(',', '.');
     const amount = parseFloat(rawAmount);
 
@@ -77,7 +91,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({ onClose, editi
         amount,
         type: formData.type,
         category: formData.category,
-        date: new Date(formData.date),
+        date: new Date(formData.date + 'T12:00:00'),
       };
 
       if (editingTransaction) {
@@ -97,11 +111,9 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({ onClose, editi
     } catch (err) {
       setIsLoading(false);
       setError("Erro ao salvar. Tente novamente.");
-      console.error("Erro ao salvar:", err);
     }
   };
 
-  // Função para atualizar o valor e remover o erro enquanto o usuário digita
   const handleAmountChange = (val: string) => {
     setFormData({ ...formData, amount: val });
     if (error) setError(null);
@@ -144,11 +156,16 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({ onClose, editi
         
         <form onSubmit={handleSubmit} id="transaction-form" className="flex-1 overflow-y-auto p-6 sm:p-8 space-y-5 custom-scrollbar">
           <div className="space-y-2.5">
-            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] ml-1">Descrição</label>
+            <div className="flex justify-between items-center ml-1">
+              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Descrição</label>
+              <span className={`text-[9px] font-bold ${formData.description.length >= 25 ? 'text-amber-500' : 'text-slate-300'}`}>
+                {formData.description.length}/30
+              </span>
+            </div>
             <Input
               type="text"
               required
-              maxLength={40}
+              maxLength={30} // <--- LIMITE ALTERADO PARA 30
               disabled={isLoading || showSuccess}
               className="rounded-2xl border-slate-200 h-12 focus:border-emerald-500 focus:ring-emerald-500/10 transition-colors"
               value={formData.description}
@@ -170,7 +187,6 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({ onClose, editi
                   onChange={(e) => handleAmountChange(e.target.value)}
                   placeholder="0,00"
                 />
-                {/* MENSAGEM DE ERRO NA TELA */}
                 {error && (
                   <div className="absolute -bottom-5 left-1 flex items-center gap-1 text-red-500 animate-in fade-in slide-in-from-top-1 duration-200">
                     <AlertCircle className="w-3 h-3" />

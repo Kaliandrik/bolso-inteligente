@@ -9,7 +9,6 @@ import { useMonthlySummary } from '../hooks/useMonthlySummary';
 import { Transaction } from '../types/finance';
 import { startOfMonth, endOfMonth, isWithinInterval, format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-// No topo do arquivo, adicione os ícones que o TypeScript reclamou:
 import { 
   LayoutDashboard, 
   Plus, 
@@ -44,7 +43,6 @@ export const Dashboard: React.FC = () => {
     <div className="min-h-screen bg-[#F8FAFC]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
         
-        {/* Top Header Section */}
         <header className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div className="space-y-1">
             <div className="flex items-center gap-2 text-slate-400 font-bold text-[10px] uppercase tracking-[0.2em] mb-1">
@@ -93,13 +91,11 @@ export const Dashboard: React.FC = () => {
           </div>
         ) : (
           <div className="space-y-8 animate-in fade-in duration-700">
-            
             <section>
               <SummaryCards summary={summary} />
             </section>
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-              
               <div className="lg:col-span-7 xl:col-span-8 overflow-hidden">
                 <div className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
                   <div className="px-6 py-5 border-b border-slate-50 flex items-center justify-between bg-slate-50/50">
@@ -144,11 +140,11 @@ export const Dashboard: React.FC = () => {
                   </div>
                 </div>
               </div>
-
             </div>
           </div>
         )}
 
+        {/* --- AQUI ESTAVA O ERRO E AQUI ESTÁ A CORREÇÃO --- */}
         {showForm && (
           <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-300">
             <div className="w-full max-w-lg animate-in zoom-in-95 duration-200">
@@ -158,6 +154,7 @@ export const Dashboard: React.FC = () => {
                   setEditingTransaction(null);
                 }}
                 editingTransaction={editingTransaction}
+                selectedDate={state.selectedMonth} // <--- ADICIONADO AQUI
               />
             </div>
           </div>
