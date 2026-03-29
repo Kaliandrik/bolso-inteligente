@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, X, Receipt, CheckCircle2, Loader2 } from 'lucide-react'; // Adicionei Loader2
+import { Plus, X, Receipt, CheckCircle2, Loader2 } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 import { Select } from '../ui/Select';
@@ -41,7 +41,7 @@ interface FormData {
 export const TransactionForm: React.FC<TransactionFormProps> = ({ onClose, editingTransaction }) => {
   const { addTransaction, updateTransaction } = useFinance();
   const [showSuccess, setShowSuccess] = useState(false);
-  const [isLoading, setIsLoading] = useState(false); // NOVO: Estado de loading
+  const [isLoading, setIsLoading] = useState(false);
   
   const [formData, setFormData] = useState<FormData>({
     description: editingTransaction?.description || '',
@@ -55,8 +55,6 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({ onClose, editi
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
-    // Validação de segurança
     if (isLoading || showSuccess) return;
 
     const amount = parseFloat(formData.amount.replace(',', '.'));
@@ -65,7 +63,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({ onClose, editi
       return;
     }
 
-    setIsLoading(true); // Começa a carregar
+    setIsLoading(true);
 
     try {
       const transactionData = {
@@ -82,10 +80,9 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({ onClose, editi
         await addTransaction(transactionData);
       }
 
-      setIsLoading(false); // Para de carregar
-      setShowSuccess(true); // Mostra o sucesso flutuante
+      setIsLoading(false);
+      setShowSuccess(true);
       
-      // Fecha o modal suavemente após 2.2 segundos (para dar tempo de ver a animação)
       setTimeout(() => {
         onClose();
         setShowSuccess(false);
@@ -101,20 +98,17 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({ onClose, editi
   return (
     <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4 sm:p-6 animate-in fade-in duration-300">
       
-      {/* Toast de Sucesso - Flutuante e Suave */}
       {showSuccess && (
         <div className="absolute top-12 left-1/2 -translate-x-1/2 z-[110] animate-toast-in">
           <div className="bg-emerald-600 text-white px-7 py-3.5 rounded-3xl shadow-3xl flex items-center gap-3.5 border border-white/10 ring-4 ring-emerald-500/20">
             <CheckCircle2 className="w-6 h-6 text-emerald-200" strokeWidth={2.5} />
-            <span className="font-extrabold text-sm tracking-tight">Lançamento realizado com sucesso!</span>
+            <span className="font-extrabold text-sm tracking-tight text-center">Lançamento realizado com sucesso!</span>
           </div>
         </div>
       )}
 
-      {/* Modal Principal - Transição Suave ao aparecer o sucesso */}
       <div className={`bg-white rounded-[2.5rem] w-full max-w-md shadow-2xl flex flex-col max-h-[85vh] sm:max-h-[90vh] border border-slate-100 overflow-hidden animate-modal-in transition-all duration-700 ease-in-out ${showSuccess ? 'scale-[0.9] opacity-0 grayscale blur-sm pointer-events-none' : 'scale-100 opacity-100 blur-0 grayscale-0'}`}>
         
-        {/* Header - Fixo */}
         <div className="flex justify-between items-center p-6 sm:p-8 pb-4 border-b border-slate-50 flex-shrink-0">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center shadow-sm">
@@ -136,13 +130,13 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({ onClose, editi
           )}
         </div>
         
-        {/* Formulário com Scroll Interno */}
         <form onSubmit={handleSubmit} id="transaction-form" className="flex-1 overflow-y-auto p-6 sm:p-8 space-y-5 custom-scrollbar">
           <div className="space-y-2.5">
             <label className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] ml-1">Descrição</label>
             <Input
               type="text"
               required
+              maxLength={40} // Evita que o usuário insira nomes gigantes que quebram o layout
               disabled={isLoading || showSuccess}
               className="rounded-2xl border-slate-200 h-12 focus:border-emerald-500 focus:ring-emerald-500/10 transition-colors"
               value={formData.description}
@@ -178,7 +172,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({ onClose, editi
             </div>
           </div>
           
-          <div className="grid grid-cols-grid-cols-2 gap-4 xs:grid-cols-1 gap-4">
+          <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2.5">
               <label className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] ml-1">Fluxo</label>
               <Select
@@ -201,10 +195,8 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({ onClose, editi
               />
             </div>
           </div>
-          <div className="h-2" />
         </form>
 
-        {/* Rodapé - Fixo */}
         <div className="p-6 sm:p-8 pt-4 border-t border-slate-50 bg-slate-50/50 flex-shrink-0">
           <div className="flex gap-3">
             <Button 
@@ -212,7 +204,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({ onClose, editi
               variant="outline" 
               onClick={onClose} 
               disabled={isLoading || showSuccess}
-              className="flex-1 rounded-2xl h-12.5 font-bold text-slate-500 border-slate-200 text-xs active:scale-95 transition-all h-12"
+              className="flex-1 rounded-2xl h-12 font-bold text-slate-500 border-slate-200 text-xs active:scale-95 transition-all"
             >
               Cancelar
             </Button>
@@ -220,7 +212,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({ onClose, editi
               type="submit" 
               form="transaction-form"
               disabled={isLoading || showSuccess}
-              className={`flex-1 rounded-2xl h-12.5 font-bold shadow-lg text-xs text-white flex items-center justify-center transition-all duration-300 h-12 ${isLoading ? 'bg-emerald-400 cursor-not-allowed shadow-none' : showSuccess ? 'bg-emerald-500 opacity-50 scale-95' : 'bg-emerald-600 hover:bg-emerald-700 shadow-emerald-200 active:scale-95'}`}
+              className={`flex-1 rounded-2xl h-12 font-bold shadow-lg text-xs text-white flex items-center justify-center transition-all duration-300 ${isLoading ? 'bg-emerald-400 cursor-not-allowed shadow-none' : showSuccess ? 'bg-emerald-500 opacity-50 scale-95' : 'bg-emerald-600 hover:bg-emerald-700 shadow-emerald-200 active:scale-95'}`}
             >
               {isLoading ? (
                 <>

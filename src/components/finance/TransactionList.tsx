@@ -1,4 +1,4 @@
-import React, { useState } from 'react'; // Adicionado useState
+import React, { useState } from 'react';
 import { Trash2, Edit, Loader2, AlertCircle } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '../ui/Card';
 import { Button } from '../ui/Button';
@@ -26,8 +26,6 @@ const categoryColors: Record<string, string> = {
 
 export const TransactionList: React.FC<TransactionListProps> = ({ transactions, onEdit }) => {
   const { deleteTransaction, isLoading } = useFinance();
-  
-  // ESTADO PARA O MODAL DE EXCLUSÃO
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   if (isLoading) {
@@ -51,7 +49,6 @@ export const TransactionList: React.FC<TransactionListProps> = ({ transactions, 
     );
   }
 
-  // FUNÇÃO QUE EXECUTA A EXCLUSÃO REAL
   const confirmDelete = async () => {
     if (deletingId) {
       await deleteTransaction(deletingId);
@@ -61,7 +58,6 @@ export const TransactionList: React.FC<TransactionListProps> = ({ transactions, 
 
   return (
     <>
-      {/* MODAL DE CONFIRMAÇÃO PERSONALIZADO */}
       {deletingId && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[200] p-4">
           <div className="bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl animate-in zoom-in-95 duration-200">
@@ -74,17 +70,10 @@ export const TransactionList: React.FC<TransactionListProps> = ({ transactions, 
                 Tem certeza que deseja apagar este registro? Esta ação não pode ser desfeita.
               </p>
               <div className="flex gap-3 w-full">
-                <Button 
-                  variant="outline" 
-                  className="flex-1 rounded-xl"
-                  onClick={() => setDeletingId(null)}
-                >
+                <Button variant="outline" className="flex-1 rounded-xl" onClick={() => setDeletingId(null)}>
                   Cancelar
                 </Button>
-                <Button 
-                  className="flex-1 rounded-xl bg-red-600 hover:bg-red-700 text-white"
-                  onClick={confirmDelete}
-                >
+                <Button className="flex-1 rounded-xl bg-red-600 hover:bg-red-700 text-white" onClick={confirmDelete}>
                   Excluir
                 </Button>
               </div>
@@ -102,41 +91,44 @@ export const TransactionList: React.FC<TransactionListProps> = ({ transactions, 
             {transactions.map((transaction: Transaction) => (
               <div
                 key={transaction.id}
-                className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors"
+                className="flex items-start justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors"
               >
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-1">
-                    <span className="font-medium">{transaction.description}</span>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${categoryColors[transaction.category] || categoryColors.Outros}`}>
-                      {transaction.category}
-                    </span>
-                  </div>
-                  <div className="text-sm text-gray-500">
-                    {formatDate(transaction.date)}
+                <div className="flex-1 min-w-0 pr-2">
+                  <div className="flex flex-col gap-1 mb-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                       {/* break-words garante que o texto quebre se for uma palavra infinita */}
+                      <span className="font-medium text-gray-900 break-words leading-tight">
+                        {transaction.description}
+                      </span>
+                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium whitespace-nowrap ${categoryColors[transaction.category] || categoryColors.Outros}`}>
+                        {transaction.category}
+                      </span>
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      {formatDate(transaction.date)}
+                    </div>
                   </div>
                 </div>
                 
-                <div className="text-right">
-                  <div className={`font-semibold ${transaction.type === 'income' ? 'text-green-600' : 'text-red-600'}`}>
+                <div className="flex flex-col items-end gap-2 flex-shrink-0">
+                  <div className={`font-semibold text-sm sm:text-base ${transaction.type === 'income' ? 'text-green-600' : 'text-red-600'}`}>
                     {transaction.type === 'income' ? '+' : '-'} {formatCurrency(transaction.amount)}
                   </div>
-                </div>
-                
-                <div className="flex gap-2 ml-4">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => onEdit(transaction)}
-                  >
-                    <Edit className="w-4 h-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setDeletingId(transaction.id)} // Alterado para setar o ID
-                  >
-                    <Trash2 className="w-4 h-4 text-red-600" />
-                  </Button>
+                  
+                  <div className="flex gap-1">
+                    <button 
+                      onClick={() => onEdit(transaction)}
+                      className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors text-gray-500"
+                    >
+                      <Edit className="w-4 h-4" />
+                    </button>
+                    <button 
+                      onClick={() => setDeletingId(transaction.id)}
+                      className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors text-red-500"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
