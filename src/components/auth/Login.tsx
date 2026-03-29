@@ -32,6 +32,8 @@ export const Login: React.FC<{ onSwitchToRegister: () => void }> = ({ onSwitchTo
     const handleForgotPassword = async () => {
         if (!email) {
             setError('Digite seu e-mail no campo acima para recuperar a senha.');
+            // Focar no campo de email para ajudar o usuário
+            document.getElementById('email-input')?.focus();
             return;
         }
 
@@ -100,30 +102,23 @@ export const Login: React.FC<{ onSwitchToRegister: () => void }> = ({ onSwitchTo
                             <div className="relative">
                                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
                                 <Input
+                                    id="email-input"
                                     type="email"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     className="pl-12 py-3 bg-gray-50 border-gray-100 focus:bg-white focus:ring-2 focus:ring-emerald-500 rounded-2xl transition-all"
                                     placeholder="seu@email.com"
-                                    required
+                                    required={!resetLoading} // Não obrigatório se estiver apenas recuperando a senha, mas o ID ajuda a focar
                                 />
                             </div>
                         </div>
 
                         <div>
-                            <div className="flex justify-between items-center mb-2 ml-1">
-                                <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider">
-                                    Senha
-                                </label>
-                                <button
-                                    type="button"
-                                    onClick={handleForgotPassword}
-                                    disabled={resetLoading}
-                                    className="text-xs text-emerald-600 hover:text-emerald-700 font-bold transition-colors disabled:opacity-50"
-                                >
-                                    {resetLoading ? 'Enviando...' : 'Esqueceu sua senha?'}
-                                </button>
-                            </div>
+                            {/* Label da Senha (sozinho no topo) */}
+                            <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 ml-1">
+                                Senha
+                            </label>
+                            
                             <div className="relative">
                                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
                                 <Input
@@ -132,7 +127,7 @@ export const Login: React.FC<{ onSwitchToRegister: () => void }> = ({ onSwitchTo
                                     onChange={(e) => setPassword(e.target.value)}
                                     className="pl-12 pr-12 py-3 bg-gray-50 border-gray-100 focus:bg-white focus:ring-2 focus:ring-emerald-500 rounded-2xl transition-all"
                                     placeholder="Sua senha"
-                                    required={!resetLoading}
+                                    required={!resetLoading} // Não obrigatório se estiver apenas recuperando a senha
                                 />
                                 <button
                                     type="button"
@@ -140,6 +135,18 @@ export const Login: React.FC<{ onSwitchToRegister: () => void }> = ({ onSwitchTo
                                     className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-emerald-600 transition-colors"
                                 >
                                     {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                                </button>
+                            </div>
+
+                            {/* Botão "Esqueceu sua senha?" (Agora embaixo do campo) */}
+                            <div className="flex justify-end mt-2 mr-1">
+                                <button
+                                    type="button"
+                                    onClick={handleForgotPassword}
+                                    disabled={resetLoading}
+                                    className="text-xs text-emerald-600 hover:text-emerald-700 font-bold transition-colors disabled:opacity-50"
+                                >
+                                    {resetLoading ? 'Enviando...' : 'Esqueceu sua senha?'}
                                 </button>
                             </div>
                         </div>
