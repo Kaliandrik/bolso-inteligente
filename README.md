@@ -1,73 +1,21 @@
-# React + TypeScript + Vite
+# 💰 Bolso Inteligente
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+O **Bolso Inteligente** é uma aplicação de gestão financeira pessoal moderna, focada em segurança, velocidade e experiência do usuário.
 
-Currently, two official plugins are available:
+## 🚀 Tecnologias Utilizadas
+- **React + TypeScript** (Vite)
+- **Tailwind CSS** (UI moderna e responsiva)
+- **Firebase Firestore** (Arquitetura de subcoleções para isolamento de dados)
+- **Firebase Auth** (Autenticação segura)
+- **Lucide React** (Ícones)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 🏗️ Diferenciais Técnicos
+- **Segurança de Dados:** Implementação de variáveis de ambiente para proteção de chaves de API e Security Rules no Firestore.
+- **Escalabilidade:** Organização de banco de dados baseada em subcoleções (`users/{uid}/transactions`), garantindo performance mesmo com grande volume de dados.
+- **UX Fluid:** Transições e modais customizados com Tailwind para uma experiência estilo "App de Banco".
 
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## 🛠️ Como rodar o projeto localmente
+1. Clone o repositório: `git clone https://github.com/Kaliandrik/bolso-inteligente.git`
+2. Instale as dependências: `npm install`
+3. Crie um arquivo `.env.local` com suas credenciais do Firebase.
+4. Rode o projeto: `npm run dev`
