@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Plus, X, Receipt, CheckCircle2, Loader2 } from 'lucide-react'; // Adicionei Loader2
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';

@@ -1,5 +1,4 @@
 import React, { useState, useMemo } from 'react';
-import { Plus, RefreshCw, LayoutDashboard, Calendar, Wallet } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { SummaryCards } from '../components/finance/SummaryCards';
 import { TransactionForm } from '../components/finance/TransactionForm';
@@ -10,6 +9,13 @@ import { useMonthlySummary } from '../hooks/useMonthlySummary';
 import { Transaction } from '../types/finance';
 import { startOfMonth, endOfMonth, isWithinInterval, format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+// No topo do arquivo, adicione os ícones que o TypeScript reclamou:
+import { 
+  LayoutDashboard, 
+  Plus, 
+  RefreshCw, 
+  Wallet, 
+} from 'lucide-react';
 
 export const Dashboard: React.FC = () => {
   const { state, isLoading } = useFinance();
