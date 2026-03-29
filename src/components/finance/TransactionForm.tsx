@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, X, Receipt, CheckCircle2, Loader2 } from 'lucide-react';
+import { Plus, X, Receipt, CheckCircle2, Loader2, AlertCircle } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 import { Select } from '../ui/Select';
@@ -42,6 +42,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({ onClose, editi
   const { addTransaction, updateTransaction } = useFinance();
   const [showSuccess, setShowSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null); // Estado para o erro na tela
   
   const [formData, setFormData] = useState<FormData>({
     description: editingTransaction?.description || '',
@@ -55,11 +56,16 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({ onClose, editi
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setError(null); // Limpa erros anteriores ao tentar enviar
+
     if (isLoading || showSuccess) return;
 
-    const amount = parseFloat(formData.amount.replace(',', '.'));
+    // Converte e valida o valor
+    const rawAmount = formData.amount.replace(',', '.');
+    const amount = parseFloat(rawAmount);
+
     if (isNaN(amount) || amount <= 0) {
-      alert('Por favor, insira um valor válido');
+      setError('Insira um valor maior que zero');
       return;
     }
 
@@ -88,11 +94,17 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({ onClose, editi
         setShowSuccess(false);
       }, 2200);
 
-    } catch (error) {
+    } catch (err) {
       setIsLoading(false);
-      console.error("Erro ao salvar:", error);
-      alert("Ocorreu um erro ao salvar a transação.");
+      setError("Erro ao salvar. Tente novamente.");
+      console.error("Erro ao salvar:", err);
     }
+  };
+
+  // Função para atualizar o valor e remover o erro enquanto o usuário digita
+  const handleAmountChange = (val: string) => {
+    setFormData({ ...formData, amount: val });
+    if (error) setError(null);
   };
 
   return (
@@ -136,7 +148,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({ onClose, editi
             <Input
               type="text"
               required
-              maxLength={40} // Evita que o usuário insira nomes gigantes que quebram o layout
+              maxLength={40}
               disabled={isLoading || showSuccess}
               className="rounded-2xl border-slate-200 h-12 focus:border-emerald-500 focus:ring-emerald-500/10 transition-colors"
               value={formData.description}
@@ -148,15 +160,24 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({ onClose, editi
           <div className="grid grid-cols-1 xs:grid-cols-2 gap-4">
             <div className="space-y-2.5">
               <label className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] ml-1">Valor (R$)</label>
-              <Input
-                type="text"
-                required
-                disabled={isLoading || showSuccess}
-                className="rounded-2xl border-slate-200 font-bold text-emerald-700 h-12 text-lg focus:border-emerald-500 focus:ring-emerald-500/10 transition-colors"
-                value={formData.amount}
-                onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-                placeholder="0,00"
-              />
+              <div className="relative">
+                <Input
+                  type="text"
+                  required
+                  disabled={isLoading || showSuccess}
+                  className={`rounded-2xl border-slate-200 font-bold text-emerald-700 h-12 text-lg focus:border-emerald-500 focus:ring-emerald-500/10 transition-colors ${error ? 'border-red-500 focus:border-red-500 focus:ring-red-500/10' : ''}`}
+                  value={formData.amount}
+                  onChange={(e) => handleAmountChange(e.target.value)}
+                  placeholder="0,00"
+                />
+                {/* MENSAGEM DE ERRO NA TELA */}
+                {error && (
+                  <div className="absolute -bottom-5 left-1 flex items-center gap-1 text-red-500 animate-in fade-in slide-in-from-top-1 duration-200">
+                    <AlertCircle className="w-3 h-3" />
+                    <span className="text-[10px] font-bold italic">{error}</span>
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className="space-y-2.5">
